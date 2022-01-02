@@ -210,7 +210,7 @@ public class HelloController {
 
     }
     public void removeUnreachable(){
-        findAccessible(capitalStates.get(0).getStateName()/*,stateHashMap,capitalStates*/);
+        findAccessible(capitalStates.get(0).getStateName());
         ArrayList<State>unTickedStates=new ArrayList<>();
         ArrayList<String>unTickedStrings=new ArrayList<>();
         for(int i=0;i<capitalStates.size(); i++) {
@@ -292,7 +292,6 @@ public class HelloController {
         candidateFeasiblePairs.get(string).visited=true;
         for (String st: candidateFeasiblePairs.get(string).transtionsList.keySet()){
             String str=candidateFeasiblePairs.get(string).transtionsList.get(st);
-            //System.out.println("(r,s) = "+str);
             String []split= str.split(",");
             if(!split[0].equals(split[1])) {
                 if (!(str.equals(st) || (split[1] + "," + split[0]).equals(st))) {
@@ -363,10 +362,6 @@ public class HelloController {
         //to check if the string is accepted
         //the string is accepted if end up with final (halt) state
 
-        /*if(checkStringText.getText()==null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("You should enter a string to check!!");
-        }*/
         try {
             String stringEntered = checkStringText.getText();
             if (checkString(stringEntered, 0, capitalStates.get(0).getStateName()))
@@ -381,7 +376,7 @@ public class HelloController {
 
 
     }
-    public boolean checkString(String string,int i,/*ArrayList<String>finalStates, HashMap<String, State>stateHashMap,*/ String state){
+    public boolean checkString(String string,int i,String state){
         boolean flag=false;
         boolean flag2=false;
         char ch=string.charAt(i);
