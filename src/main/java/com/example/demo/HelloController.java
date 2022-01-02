@@ -1,7 +1,7 @@
 package com.example.demo;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -9,13 +9,17 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class HelloController {
 
 
     @FXML
     private TextField pathText;
+    @FXML
+    private TextField checkStringText;
+    HashMap<String,State> stateHashMap=new HashMap<>();
+    ArrayList<State> capitalStates=new ArrayList<>();
+    ArrayList<String>finalStates=new ArrayList<>();
 
     @FXML
     protected void onBrowseButtonClick() {
@@ -24,9 +28,7 @@ public class HelloController {
         pathText.setText(file.getPath());
 
 
-        HashMap<String,State> stateHashMap=new HashMap<>();
-        ArrayList<State> capitalStates=new ArrayList<>();
-        ArrayList<String>finalStates=new ArrayList<>();
+
         HashMap<String, State> candidateFeasiblePairs=new HashMap<>();
         char []transitions=new char[46];
         try {
@@ -60,16 +62,16 @@ public class HelloController {
 
             }
 
-            removeLambda(stateHashMap, finalStates,capitalStates);
-            removeNonDeterministic(stateHashMap,capitalStates, finalStates);
-            removeUnreachable(stateHashMap,capitalStates, finalStates);
-            candidateFeasiblePairs(stateHashMap,capitalStates, finalStates, candidateFeasiblePairs);
+            removeLambda();
+            removeNonDeterministic();
+            removeUnreachable();
+            candidateFeasiblePairs(candidateFeasiblePairs);
 
             for(int i=0;i< candidateFeasiblePairs.size();i++) {
                 String value = String.valueOf(candidateFeasiblePairs.keySet().toArray()[i]);
                 checkFeasiblePairs(candidateFeasiblePairs, value, i);
             }
-            mergeEquivalentStates(candidateFeasiblePairs,capitalStates,stateHashMap,finalStates);
+            mergeEquivalentStates(candidateFeasiblePairs);
 
             for(int j=0;j< capitalStates.size();j++){
                 System.out.println(capitalStates.get(j).getStateName());
@@ -85,7 +87,7 @@ public class HelloController {
                 if(i!=finalStates.size()-1)
                     System.out.print(", ");
             }
-
+            System.out.println("");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -96,32 +98,32 @@ public class HelloController {
     }
 
 
-    public void removeLambda(HashMap<String, State>stateHashMap, ArrayList<String>finalStates,ArrayList<State>capitalState){
-        for(int j=capitalState.size()-1;j>=0;j--){
-            if(stateHashMap.get(capitalState.get(j).getStateName()).transtionsList.containsKey("@")){
-                String state=stateHashMap.get(capitalState.get(j).getStateName()).transtionsList.get("@");
+    public void removeLambda(){
+        for(int j=capitalStates.size()-1;j>=0;j--){
+            if(stateHashMap.get(capitalStates.get(j).getStateName()).transtionsList.containsKey("@")){
+                String state=stateHashMap.get(capitalStates.get(j).getStateName()).transtionsList.get("@");
                 if(state.length()==1){
                     for (String strNext: stateHashMap.get(state).transtionsList.keySet())
-                        stateHashMap.get(capitalState.get(j).getStateName()).addTrans(strNext,stateHashMap.get(state).transtionsList.get(strNext));
+                        stateHashMap.get(capitalStates.get(j).getStateName()).addTrans(strNext,stateHashMap.get(state).transtionsList.get(strNext));
                 }
                 else{
 
                     for(int i=0;i< state.length();i++)
                         for (String strNext: stateHashMap.get(state.charAt(i)+"").transtionsList.keySet())
-                            stateHashMap.get(capitalState.get(j).getStateName()).addTrans(strNext,stateHashMap.get(state.charAt(i)+"").transtionsList.get(strNext));
+                            stateHashMap.get(capitalStates.get(j).getStateName()).addTrans(strNext,stateHashMap.get(state.charAt(i)+"").transtionsList.get(strNext));
 
                 }
             }
 
         }
         //make the state to final if needed
-        for(int k=0;k< capitalState.size();k++){
-            if(stateHashMap.get(capitalState.get(k).getStateName()).transtionsList.containsKey("@")){
-                String state=stateHashMap.get(capitalState.get(k).getStateName()).transtionsList.get("@");
+        for(int k=0;k< capitalStates.size();k++){
+            if(stateHashMap.get(capitalStates.get(k).getStateName()).transtionsList.containsKey("@")){
+                String state=stateHashMap.get(capitalStates.get(k).getStateName()).transtionsList.get("@");
                 for (int i=0;i< finalStates.size();i++){
                     if(state.length()==1)
                         if(finalStates.get(i).equals(state)){
-                            finalStates.add(capitalState.get(k).getStateName());
+                            finalStates.add(capitalStates.get(k).getStateName());
                             break;
                         }
                         else{
@@ -144,7 +146,7 @@ public class HelloController {
         }
 
     }
-    public void removeNonDeterministic(HashMap<String, State>stateHashMap, ArrayList<State>capitalStates,ArrayList<String> finalStates) {
+    public void removeNonDeterministic() {
 
 
         ArrayList<State> addItems = new ArrayList<>();
@@ -191,14 +193,14 @@ public class HelloController {
         }
 
     }
-    public void findAccessable(String firstState,HashMap<String, State>stateHashMap, ArrayList<State>capitalStates){
+    public void findAccessible(String firstState){
         stateHashMap.get(firstState).reachable=true;
         for (String str : stateHashMap.get(firstState).transtionsList.keySet()) {
 
             String nextState = stateHashMap.get(firstState).transtionsList.get(str);
             if(!stateHashMap.get(nextState).reachable) {
                 stateHashMap.get(nextState).reachable = true;
-                findAccessable(nextState, stateHashMap, capitalStates);
+                findAccessible(nextState);
             }
 
         }
@@ -207,8 +209,8 @@ public class HelloController {
 
 
     }
-    public void removeUnreachable(HashMap<String, State>stateHashMap, ArrayList<State>capitalStates, ArrayList<String>finalState){
-        findAccessable(capitalStates.get(0).getStateName(),stateHashMap,capitalStates);
+    public void removeUnreachable(){
+        findAccessible(capitalStates.get(0).getStateName()/*,stateHashMap,capitalStates*/);
         ArrayList<State>unTickedStates=new ArrayList<>();
         ArrayList<String>unTickedStrings=new ArrayList<>();
         for(int i=0;i<capitalStates.size(); i++) {
@@ -221,12 +223,12 @@ public class HelloController {
         }
         capitalStates.removeAll(unTickedStates);
         stateHashMap.keySet().removeAll(unTickedStrings);
-        finalState.removeAll(unTickedStrings);
+        finalStates.removeAll(unTickedStrings);
 
 
 
     }
-    public void candidateFeasiblePairs(HashMap<String, State>stateHashMap, ArrayList<State>capitalStates, ArrayList<String>finalState,HashMap candidateFeasiblePairs){
+    public void candidateFeasiblePairs(HashMap candidateFeasiblePairs){
         ArrayList<String> nonFinalState=new ArrayList<>();
         HashMap<String, State>feasiblePairsHash=candidateFeasiblePairs;
         ArrayList<String>feasiblePairsList=new ArrayList<>();
@@ -234,7 +236,7 @@ public class HelloController {
         boolean flag1=true;
         boolean flag2=true;
         for (int i=0;i< capitalStates.size();i++)
-            if(!finalState.contains(capitalStates.get(i).getStateName())) {
+            if(!finalStates.contains(capitalStates.get(i).getStateName())) {
                 nonFinalState.add(capitalStates.get(i).getStateName());
 
             }
@@ -257,19 +259,19 @@ public class HelloController {
                     }
 
 
-        for (int i=0;i<finalState.size();i++)
-            for (int j=i+1;j<finalState.size();j++)
-                if(!finalState.get(i).equals(finalState.get(j)))
-                    if(stateHashMap.get(finalState.get(i)).transtionsList.size()==stateHashMap.get(finalState.get(j)).transtionsList.size()) {
-                        for (String trans : stateHashMap.get(finalState.get(i)).transtionsList.keySet())
-                            if (!stateHashMap.get(finalState.get(j)).transtionsList.containsKey(trans)) {
+        for (int i=0;i<finalStates.size();i++)
+            for (int j=i+1;j<finalStates.size();j++)
+                if(!finalStates.get(i).equals(finalStates.get(j)))
+                    if(stateHashMap.get(finalStates.get(i)).transtionsList.size()==stateHashMap.get(finalStates.get(j)).transtionsList.size()) {
+                        for (String trans : stateHashMap.get(finalStates.get(i)).transtionsList.keySet())
+                            if (!stateHashMap.get(finalStates.get(j)).transtionsList.containsKey(trans)) {
                                 flag2 = false;
                                 break;
 
                             }
                         if(flag2)
-                            if(!(feasiblePairsHash.containsKey(finalState.get(i)+","+finalState.get(j))))
-                                feasiblePairsHash.put(finalState.get(i)+","+finalState.get(j),new State(finalState.get(i)+","+finalState.get(j)));
+                            if(!(feasiblePairsHash.containsKey(finalStates.get(i)+","+finalStates.get(j))))
+                                feasiblePairsHash.put(finalStates.get(i)+","+finalStates.get(j),new State(finalStates.get(i)+","+finalStates.get(j)));
                     }
 
         for (String feasible: feasiblePairsHash.keySet()){
@@ -328,7 +330,7 @@ public class HelloController {
         }
 
     }
-    public void mergeEquivalentStates(HashMap<String, State>candidateFeasiblePairs, ArrayList<State>capitalStates, HashMap<String, State>stateHashMap, ArrayList<String>finalStates){
+    public void mergeEquivalentStates(HashMap<String, State>candidateFeasiblePairs/*, ArrayList<State>capitalStates, HashMap<String, State>stateHashMap, ArrayList<String>finalStates*/){
         ArrayList<State>equivalentValues=new ArrayList<>();
         ArrayList<String>equivalentStrings=new ArrayList<>();
 
@@ -355,6 +357,55 @@ public class HelloController {
 
 
 
+
+    }
+    public void onCheckButtonClick(){
+        //to check if the string is accepted
+        //the string is accepted if end up with final (halt) state
+
+        /*if(checkStringText.getText()==null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("You should enter a string to check!!");
+        }*/
+        try {
+            String stringEntered = checkStringText.getText();
+            if (checkString(stringEntered, 0, capitalStates.get(0).getStateName()))
+                System.out.println("the string valid");
+            else System.out.println("the string invalid");
+        }catch (Exception e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("You should enter a string to check!!");
+            alert.show();
+        }
+
+
+
+    }
+    public boolean checkString(String string,int i,/*ArrayList<String>finalStates, HashMap<String, State>stateHashMap,*/ String state){
+        boolean flag=false;
+        boolean flag2=false;
+        char ch=string.charAt(i);
+
+        if(Character.isDigit(ch)) {
+            ch = 'd';
+        }
+        if(stateHashMap.get(state).transtionsList.containsKey(ch+"")){
+            i++;
+            if(i==string.length()){
+                if(finalStates.contains(stateHashMap.get(state).transtionsList.get(ch+""))) {
+                    flag = true;
+                }
+            }
+            else
+                return checkString(string,i,stateHashMap.get(state).transtionsList.get(ch+""));
+        }
+        else {
+            flag = false;
+        }
+
+
+
+        return flag;
 
     }
 

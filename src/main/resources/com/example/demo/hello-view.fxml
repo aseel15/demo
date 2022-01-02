@@ -22,5 +22,16 @@
             <Font name="Times New Roman" size="14.0" />
          </font>
       </Button>
+      <Label layoutX="57.0" layoutY="283.0" text="Enter a string to check:" AnchorPane.leftAnchor="46.0">
+         <font>
+            <Font name="Times New Roman" size="24.0" />
+         </font>
+      </Label>
+      <TextField fx:id="checkStringText" layoutX="46.0" layoutY="322.0" prefHeight="34.0" prefWidth="358.0" promptText="the string" style="-fx-border-color: #bc869d;" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="240.60000000000002" />
+      <Button layoutX="506.0" layoutY="322.0" mnemonicParsing="false" onAction="#onCheckButtonClick" style="-fx-background-color: #bc869d; -fx-font-family: Times New Roman; -fx-text-fill: black;" text="Check String" AnchorPane.rightAnchor="70.0">
+         <font>
+            <Font name="Times New Roman" size="14.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>
