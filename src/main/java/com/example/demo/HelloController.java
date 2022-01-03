@@ -2,6 +2,7 @@ package com.example.demo;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -17,6 +18,8 @@ public class HelloController {
     private TextField pathText;
     @FXML
     private TextField checkStringText;
+    @FXML
+    private Label resultCheckText;
     HashMap<String,State> stateHashMap=new HashMap<>();
     ArrayList<State> capitalStates=new ArrayList<>();
     ArrayList<String>finalStates=new ArrayList<>();
@@ -88,6 +91,9 @@ public class HelloController {
                     System.out.print(", ");
             }
             System.out.println("");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("The Out Table in The Console");
+            alert.show();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -329,7 +335,7 @@ public class HelloController {
         }
 
     }
-    public void mergeEquivalentStates(HashMap<String, State>candidateFeasiblePairs/*, ArrayList<State>capitalStates, HashMap<String, State>stateHashMap, ArrayList<String>finalStates*/){
+    public void mergeEquivalentStates(HashMap<String, State>candidateFeasiblePairs){
         ArrayList<State>equivalentValues=new ArrayList<>();
         ArrayList<String>equivalentStrings=new ArrayList<>();
 
@@ -365,8 +371,8 @@ public class HelloController {
         try {
             String stringEntered = checkStringText.getText();
             if (checkString(stringEntered, 0, capitalStates.get(0).getStateName()))
-                System.out.println("the string valid");
-            else System.out.println("the string invalid");
+                resultCheckText.setText("The String is Accepted");
+            else resultCheckText.setText("The String is not Accepted");
         }catch (Exception e){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("You should enter a string to check!!");

@@ -7,8 +7,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="438.0" prefWidth="645.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="645.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.HelloController">
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#bc869d" height="101.0" stroke="#bc869d" strokeType="INSIDE" width="645.0" AnchorPane.leftAnchor="0.6000000000000227" AnchorPane.rightAnchor="0.0" />
       <Label layoutX="174.0" layoutY="27.0" prefHeight="46.0" prefWidth="298.0" text="NDFSA to DFSA" textAlignment="RIGHT" AnchorPane.leftAnchor="174.0" AnchorPane.rightAnchor="173.0">
@@ -33,5 +32,10 @@
             <Font name="Times New Roman" size="14.0" />
          </font>
       </Button>
+      <Label fx:id="resultCheckText" layoutX="219.0" layoutY="432.0" prefHeight="18.0" prefWidth="208.0">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

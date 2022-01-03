@@ -1,7 +1,4 @@
 package com.example.demo;
-
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class State {
@@ -15,7 +12,6 @@ public class State {
     HashMap<String, String>transtionsList=new HashMap<>();
 
     public State(){
-//        this.listTransitions=new ArrayList<>();
     }
 
     public State(String stateName){
